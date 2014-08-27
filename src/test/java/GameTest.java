@@ -1,10 +1,9 @@
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
- * PLEASE NOTE THAT THIS SECTION IS A BRAIN DUMB (INITIAL THOUGHTS).
- * 
  * Numbered boxes of a 3 by 3 Tic-tac-toe game board
  *   ___ ___ ___
  *  | 1 | 2 | 3 |
@@ -13,13 +12,6 @@ import org.junit.Test;
  *  |___|___|___|
  *  | 7 | 8 | 9 |
  *  |___|___|___|
- *  
- *  Terms:
- *  Triangle win pattern: 1,5,7 -> 3,4 free; 1,5,3-> 7,2 free; 3,5,9 -> 1,6 free; 7,5,9 -> 3,8 free.
- *  The L win pattern: 1,2,4 -> 3,7 free; 2,3,6 -> 1,9 free; 6,9,8 -> 3,7 free; 4,7,8 -> 1,9 free.
- *  Centre: box 5
- *  Middle: boxes 2,4,8,6
- *  Corner: 1,3,9,7
  *  
  * @author annis
  *
@@ -60,6 +52,31 @@ public class GameTest {
         assertEquals(gameBoard[3-1]+gameBoard[6-1]+gameBoard[9-1], "xxx");
     }
     
+    @Test
+    public void blockAPotentialWin() {
+        addToBoxToWin("1", "o");
+        addToBoxToWin("3", "o");
+        
+        blockAPotentialWinWith("x");
+        
+        assertEquals(gameBoard[1-1]+gameBoard[2-1]+gameBoard[3-1], "oxo");
+    }
+    
+    private void blockAPotentialWinWith(String noughtOrCross) {
+        threeBlockingPossibilitiesForRow1(noughtOrCross);
+    }
+
+    private void threeBlockingPossibilitiesForRow1(String thisCharacterThatBlockASequence) {
+        String c = whatCharacterThatHasASequenceNeedsToBeBlockedBy(thisCharacterThatBlockASequence);
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals('1'+ c + c)) gameBoard[1-1] = thisCharacterThatBlockASequence;
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + '2' + c)) gameBoard[2-1] = thisCharacterThatBlockASequence;
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + c+ '3')) gameBoard[3-1] = thisCharacterThatBlockASequence;
+    }
+
+    private String whatCharacterThatHasASequenceNeedsToBeBlockedBy(String theCharacterToBlockASequence) {
+        return theCharacterToBlockASequence == "x" ? "o" : "x";
+    }
+
     private void addToBoxToWin(String boxNumber, String noughtOrCross) {
         addToBox(boxNumber, noughtOrCross);
         String message = isAWin(noughtOrCross) ? "Stop. YOU HAVE WON" : "NO WIN";
