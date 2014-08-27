@@ -25,6 +25,7 @@ import org.junit.Test;
  *
  */
 
+
 public class GameTest {
     
     private static final boolean WIN = true;
@@ -60,6 +61,31 @@ public class GameTest {
         assertEquals(gameBoard[3-1]+gameBoard[6-1]+gameBoard[9-1], "xxx");
     }
     
+    @Test
+    public void blockAPotentialWin() {
+        addToBoxToWin("1", "o");
+        addToBoxToWin("3", "o");
+        
+        blockAPotentialWinWith("x");
+        
+        assertEquals(gameBoard[1-1]+gameBoard[2-1]+gameBoard[3-1], "oxo");
+    }
+    
+    private void blockAPotentialWinWith(String noughtOrCross) {
+        threeBlockingPossibilitiesForRow1(noughtOrCross);
+    }
+
+    private void threeBlockingPossibilitiesForRow1(String thisCharacterThatBlockASequence) {
+        String c = whatCharacterThatHasASequenceNeedsToBeBlockedBy(thisCharacterThatBlockASequence);
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals('1'+ c + c)) gameBoard[1-1] = thisCharacterThatBlockASequence;
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + '2' + c)) gameBoard[2-1] = thisCharacterThatBlockASequence;
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + c+ '3')) gameBoard[3-1] = thisCharacterThatBlockASequence;
+    }
+
+    private String whatCharacterThatHasASequenceNeedsToBeBlockedBy(String theCharacterToBlockASequence) {
+        return theCharacterToBlockASequence == "x" ? "o" : "x";
+    }
+
     private void addToBoxToWin(String boxNumber, String noughtOrCross) {
         addToBox(boxNumber, noughtOrCross);
         String message = isAWin(noughtOrCross) ? "Stop. YOU HAVE WON" : "NO WIN";
