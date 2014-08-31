@@ -49,7 +49,7 @@ public class GameTest {
     }
     
     @Test
-    public void computerStartsWithCentreBoxCrossedAndHumanPlayerChoosesAMiddleBox2GivingComputerAWin() {
+    public void computerCrossesCentreBoxAtStartOftheGameAndOpponentMakesABadMoveOnBox2GivingComputerAWin() {
         addToBoxToWin("5", "x");
         addToBoxToWin("2", "o");
         addToBoxToWin("3", "x");
@@ -66,24 +66,57 @@ public class GameTest {
         addToBoxToWin("1", "o");
         addToBoxToWin("3", "o");
         
-        blockAPotentialWinWith("x");
+        blockAPotentialWinWithThis("x");
         
         assertEquals(gameBoard[1-1]+gameBoard[2-1]+gameBoard[3-1], "oxo");
     }
     
-    private void blockAPotentialWinWith(String noughtOrCross) {
-        threeBlockingPossibilitiesForRow1(noughtOrCross);
+    @Test
+    public void afterPlayer1PlaysPromptPlayer2ToMakeAMove() {
+    	 
+    }
+    
+    private void blockAPotentialWinWithThis(String piece) {
+        String c = blockOpponentWithThis(piece);
+        
+        // Rows
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals('1'+ c + c)) gameBoard[1-1] = piece;
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + '2' + c)) gameBoard[2-1] = piece;
+        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + c+ '3')) gameBoard[3-1] = piece;
+        
+        if((gameBoard[4-1] + gameBoard[5-1] + gameBoard[6-1]).equals('4'+ c + c)) gameBoard[4-1] = piece;
+        if((gameBoard[4-1] + gameBoard[5-1] + gameBoard[6-1]).equals(c + '5' + c)) gameBoard[5-1] = piece;
+        if((gameBoard[4-1] + gameBoard[5-1] + gameBoard[6-1]).equals(c + c+ '6')) gameBoard[6-1] = piece;
+        
+        if((gameBoard[7-1] + gameBoard[8-1] + gameBoard[9-1]).equals('7'+ c + c)) gameBoard[7-1] = piece;
+        if((gameBoard[7-1] + gameBoard[8-1] + gameBoard[9-1]).equals(c + '8' + c)) gameBoard[8-1] = piece;
+        if((gameBoard[7-1] + gameBoard[8-1] + gameBoard[9-1]).equals(c + c+ '9')) gameBoard[9-1] = piece;
+        
+        // Columns
+        if((gameBoard[1-1] + gameBoard[4-1] + gameBoard[7-1]).equals('1'+ c + c)) gameBoard[1-1] = piece;
+        if((gameBoard[1-1] + gameBoard[4-1] + gameBoard[7-1]).equals(c + '4' + c)) gameBoard[4-1] = piece;
+        if((gameBoard[1-1] + gameBoard[4-1] + gameBoard[7-1]).equals(c + c+ '7')) gameBoard[7-1] = piece;
+        
+        if((gameBoard[2-1] + gameBoard[5-1] + gameBoard[8-1]).equals('2'+ c + c)) gameBoard[2-1] = piece;
+        if((gameBoard[2-1] + gameBoard[5-1] + gameBoard[8-1]).equals(c + '5' + c)) gameBoard[5-1] = piece;
+        if((gameBoard[2-1] + gameBoard[5-1] + gameBoard[8-1]).equals(c + c+ '8')) gameBoard[8-1] = piece;
+        
+        if((gameBoard[3-1] + gameBoard[6-1] + gameBoard[9-1]).equals('3'+ c + c)) gameBoard[3-1] = piece;
+        if((gameBoard[3-1] + gameBoard[6-1] + gameBoard[9-1]).equals(c + '6' + c)) gameBoard[6-1] = piece;
+        if((gameBoard[3-1] + gameBoard[6-1] + gameBoard[9-1]).equals(c + c+ '9')) gameBoard[9-1] = piece;
+        
+        // Diagonals
+        if((gameBoard[1-1] + gameBoard[5-1] + gameBoard[9-1]).equals('1'+ c + c)) gameBoard[1-1] = piece;
+        if((gameBoard[1-1] + gameBoard[5-1] + gameBoard[9-1]).equals(c + '5' + c)) gameBoard[5-1] = piece;
+        if((gameBoard[1-1] + gameBoard[5-1] + gameBoard[9-1]).equals(c + c+ '9')) gameBoard[9-1] = piece;
+        
+        if((gameBoard[3-1] + gameBoard[5-1] + gameBoard[7-1]).equals('3'+ c + c)) gameBoard[3-1] = piece;
+        if((gameBoard[3-1] + gameBoard[5-1] + gameBoard[7-1]).equals(c + '5' + c)) gameBoard[5-1] = piece;
+        if((gameBoard[3-1] + gameBoard[5-1] + gameBoard[7-1]).equals(c + c+ '7')) gameBoard[9-1] = piece;
     }
 
-    private void threeBlockingPossibilitiesForRow1(String thisCharacterThatBlockASequence) {
-        String c = whatCharacterThatHasASequenceNeedsToBeBlockedBy(thisCharacterThatBlockASequence);
-        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals('1'+ c + c)) gameBoard[1-1] = thisCharacterThatBlockASequence;
-        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + '2' + c)) gameBoard[2-1] = thisCharacterThatBlockASequence;
-        if((gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1]).equals(c + c+ '3')) gameBoard[3-1] = thisCharacterThatBlockASequence;
-    }
-
-    private String whatCharacterThatHasASequenceNeedsToBeBlockedBy(String theCharacterToBlockASequence) {
-        return theCharacterToBlockASequence == "x" ? "o" : "x";
+    private String blockOpponentWithThis(String piece) {
+        return piece == "x" ? "o" : "x";
     }
 
     private void addToBoxToWin(String boxNumber, String noughtOrCross) {
@@ -94,8 +127,8 @@ public class GameTest {
         System.out.println(message);
     }
 
-    private boolean isAWin(String noughtOrCross) {
-        String threeNoughtsOrCrosses = noughtOrCross + noughtOrCross + noughtOrCross;
+    private boolean isAWin(String piece) {
+        String threeNoughtsOrCrosses = piece + piece + piece;
         
         String row1 = gameBoard[1-1] + gameBoard[2-1] + gameBoard[3-1];
         String row2 = gameBoard[4-1] + gameBoard[5-1] + gameBoard[6-1];
@@ -122,7 +155,7 @@ public class GameTest {
         return false;
     }
     
-    private boolean aTrianglePatternWin(String noughtOrCross) {
+    private boolean aTrianglePatternWin(String piece) {
         if(gameBoard[3-1].equals("x") &&
            gameBoard[5-1].equals("x") &&
            gameBoard[9-1].equals("x") &&
@@ -138,9 +171,9 @@ public class GameTest {
         return false;
     }
 
-    private void addToBox(String boxNumber, String noughtOrCross) {
+    private void addToBox(String boxNumber, String piece) {
         if(canAddTo(boxNumber)) {
-            gameBoard[Integer.valueOf(boxNumber)-1] = noughtOrCross;
+            gameBoard[Integer.valueOf(boxNumber)-1] = piece;
         } else {
             throw new RuntimeException(String.format("Box %s occupied", boxNumber));
         }
