@@ -20,8 +20,6 @@ import org.junit.Test;
  *  |___|___|___|
  *  
  *  Terms:
- *  Triangle win pattern: 1,5,7 -> 3,4 free; 1,5,3-> 7,2 free; 3,5,9 -> 1,6 free; 7,5,9 -> 3,8 free.
- *  The L win pattern: 1,2,4 -> 3,7 free; 2,3,6 -> 1,9 free; 6,9,8 -> 3,7 free; 4,7,8 -> 1,9 free.
  *  Centre: box 5
  *  Middle: boxes 2,4,8,6
  *  Corner: 1,3,9,7
@@ -40,10 +38,7 @@ public class GameTest {
     
     private static final boolean WIN = true;
     private static String [] gameBoardBoxNumber = {"1","2","3","4","5","6","7","8","9"};
-    private static String board = " ___ ___ ___\n| " +gameBoardBoxNumber[0]+" | " +gameBoardBoxNumber[1]+" | " +gameBoardBoxNumber[2]+" |\n|___|___|___|\n| "+gameBoardBoxNumber[3]+" | "+gameBoardBoxNumber[4]+" | "+gameBoardBoxNumber[5]+" |\n|___|___|___|\n| "+gameBoardBoxNumber[6]+" | "+gameBoardBoxNumber[7]+" | "+gameBoardBoxNumber[8]+" |\n|___|___|___|";
-    private static String promptToPlay = "Choose a box number: ";
-    
-//    private Map<Integer,String> gameBoard = new HashMap<Integer,String>();
+    private static String promptToPlay = "Enter box number: ";
     
     @Test
     public void assertBox1IsEmpty() {
@@ -55,22 +50,6 @@ public class GameTest {
         gameBoardBoxNumber[0] = "x";
         assertEquals(gameBoardBoxNumber[0], "x");
     }
-    
-//    @Test
-//    public void player1StartsGameByEnteringACrossAndPlayer2IsPromptedToEnterNought() {
-//    	String piece = "";
-//    	gameBoard[8] = "x";
-//    	for(int play = 0 ;  play < gameBoard.length; play++) {
-//        	piece = play % 2 > 0 ? "o" : "x";
-//    	}
-//    	assertEquals("o", piece);
-//    }
-//    
-//    private void round(int i, String aBox, String anotherBox) {
-//    	for(int x = 0; x < i ; i++) {
-//
-//    	}
-//	}
     
 	@Test(expected=RuntimeException.class)
     public void aPlayerEntersACrossInANonEmptyBox1() {
@@ -144,11 +123,11 @@ public class GameTest {
         return piece == "x" ? "o" : "x";
     }
 
-    private void addToBoxToWin(String boxNumber, String piece) {
-        addToBox(boxNumber, piece);
+    private void addToBoxToWin(String aBoxNumber, String piece) {
+        addToBox(aBoxNumber, piece);
         String message = isAWin(piece) ? "Stop. YOU HAVE WON" : "NO WIN";
         System.out.println(message);
-        message = aTrianglePatternWin(piece) ? "YOU HAVE WON WITH TRIANGULAR STRATEGY" : "NOT A TRIANGULAR WINS";
+//        message = aTrianglePatternWin(piece) ? "YOU HAVE WON WITH TRIANGULAR STRATEGY" : "NOT A TRIANGULAR WINS";
         System.out.println(message);
     }
 
@@ -179,57 +158,54 @@ public class GameTest {
         
         return false;
     }
-    
-    private boolean aTrianglePatternWin(String piece) {
-        if(gameBoardBoxNumber[3-1].equals("x") &&
-           gameBoardBoxNumber[5-1].equals("x") &&
-           gameBoardBoxNumber[9-1].equals("x") &&
-           gameBoardBoxNumber[1-1].equals("1") &&
-           gameBoardBoxNumber[6-1].equals("6")) {
-            System.out.println(
-                    "Box1: " + gameBoardBoxNumber[0]+ " Box2: " + gameBoardBoxNumber[1] + " Box3: " + gameBoardBoxNumber[2]+
-                    " Box4: " + gameBoardBoxNumber[3] + " Box5: " + gameBoardBoxNumber[4]+ " Box6: " + gameBoardBoxNumber[5] +
-                    " Box7: " + gameBoardBoxNumber[6]+ " Box8: " + gameBoardBoxNumber[7] + " Box9: " + gameBoardBoxNumber[8] );
-            return true;
-        }
-            
-        return false;
-    }
 
-    private void addToBox(String boxNumber, String piece) {
-        if(canAddTo(boxNumber)) {
-            gameBoardBoxNumber[Integer.valueOf(boxNumber)-1] = piece;
+    private void addToBox(String aBoxNumber, String piece) {
+        if(canAddTo(aBoxNumber)) {
+            gameBoardBoxNumber[Integer.valueOf(aBoxNumber)-1] = piece;
         } else {
-            throw new RuntimeException(String.format("Box %s occupied", boxNumber));
+            throw new RuntimeException(String.format("Box %s occupied", aBoxNumber));
         }
     }
     
-    private boolean canAddTo(String boxNumber) {
-        Integer arrayPosition = Integer.valueOf(boxNumber);
-        return  arrayPosition > 0 && gameBoardBoxNumber[arrayPosition-1].equals(boxNumber) ? true : false;
+    private boolean canAddTo(String aBoxNumber) {
+        Integer arrayPosition = Integer.valueOf(aBoxNumber);
+        return  arrayPosition > 0 && gameBoardBoxNumber[arrayPosition-1].equals(aBoxNumber) ? true : false;
     }
     
     public static void main(String[] args) {
-    	Console c = System.console();
+    	Console c = connectToGameConsole();
+        play(c, selectPlayerToStartGame(c));
+    }
+
+	private static String selectPlayerToStartGame(Console c) {
+		String player = c.readLine("Select (C)omputer or (H)uman to start the game: ").equalsIgnoreCase("C") ? "Computer" : "Human";
+        String prompt = buildBoardGame() + "\n" + player + " starts with (x). " + promptToPlay;
+        String boxNumber = c.readLine(prompt);
+        gameBoardBoxNumber[Integer.valueOf(boxNumber) - 1] = "x";
+        return player;
+	}
+
+	private static Console connectToGameConsole() {
+		Console c = System.console();
         if (c == null) {
             System.err.println("No console.");
             System.exit(1);
         }
-        String player1 = c.readLine("Select (C)omputer or (H)uman to start the game: ").equalsIgnoreCase("C") ? "Computer" : "Human";
-        updateBoard(c, player1);
-    }
+		return c;
+	}
     
-    private static void updateBoard(Console c, String player) {
-        String prompt = board + "\n" + player + "(x). " + promptToPlay;
-        String boxNumber = c.readLine(prompt);
-		board = board.replace(gameBoardBoxNumber[Integer.valueOf(boxNumber) - 1], "x");
+    private static void play(Console c, String player) {
     	for(int play = 1 ;  play < gameBoardBoxNumber.length; play++) {
     		String piece = play % 2 > 0 ? "o" : "x";
     		player = opponentOf(player);
-    		boxNumber = c.readLine(board + "\n" + player + " (" + piece +"). Chose box number: ");
-    		board = board.replace(gameBoardBoxNumber[Integer.valueOf(boxNumber) - 1], piece);
+    		String boxNumber = c.readLine(buildBoardGame() + "\n" + player + " player is assigned with (" + piece +"). Enter box number: ");
+    		gameBoardBoxNumber[Integer.valueOf(boxNumber) - 1] = piece;
     	}
 	}
+    
+    private static String buildBoardGame() {
+    	return new String(" ___ ___ ___\n| " +gameBoardBoxNumber[0]+" | " +gameBoardBoxNumber[1]+" | " +gameBoardBoxNumber[2]+" |\n|___|___|___|\n| "+gameBoardBoxNumber[3]+" | "+gameBoardBoxNumber[4]+" | "+gameBoardBoxNumber[5]+" |\n|___|___|___|\n| "+gameBoardBoxNumber[6]+" | "+gameBoardBoxNumber[7]+" | "+gameBoardBoxNumber[8]+" |\n|___|___|___|");
+    }
 
 	private static String opponentOf(String player) {
 		return player.equalsIgnoreCase("Computer") ? "Human" : "Computer";
