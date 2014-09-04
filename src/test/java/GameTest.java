@@ -29,6 +29,8 @@ import org.junit.Test;
  *  
  *  At the start of the game the human player chooses to either start the game as player1 or player2.
  *  
+ *  C:\Users\remy\git\tictactoe\src\test\java>javac -cp "C:\eclipse\plugins\org.junit_4.11.0.v201303080030\junit.jar" GameTest.java
+ *  
  * @author annis
  *
  */
@@ -174,10 +176,10 @@ public class GameTest {
     
     public static void main(String[] args) {
     	Console c = connectToGameConsole();
-        play(c, selectPlayerToStartGame(c));
+        play(c, playerToStartGame(c));
     }
 
-	private static String selectPlayerToStartGame(Console c) {
+	private static String playerToStartGame(Console c) {
 		String player = c.readLine("Select (C)omputer or (H)uman to start the game: ").equalsIgnoreCase("C") ? "Computer" : "Human";
         String prompt = buildBoardGame() + "\n" + player + " starts with (x). " + promptToPlay;
         String boxNumber = c.readLine(prompt);
@@ -195,12 +197,14 @@ public class GameTest {
 	}
     
     private static void play(Console c, String player) {
+    	String boxNumber = "0";
     	for(int play = 1 ;  play < gameBoardBoxNumber.length; play++) {
     		String piece = play % 2 > 0 ? "o" : "x";
     		player = opponentOf(player);
-    		String boxNumber = c.readLine(buildBoardGame() + "\n" + player + " player is assigned with (" + piece +"). Enter box number: ");
+    		boxNumber = c.readLine(buildBoardGame() + "\n" + player + " player is assigned with (" + piece +"). Enter box number: ");
     		gameBoardBoxNumber[Integer.valueOf(boxNumber) - 1] = piece;
     	}
+    	c.printf("%s", buildBoardGame());
 	}
     
     private static String buildBoardGame() {
